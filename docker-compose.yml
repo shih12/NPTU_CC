@@ -1,0 +1,106 @@
+version: "3.9"
+services:
+
+  nginx:
+    container_name: nginx
+    build: nginx/
+    ports:
+      - "80:80"
+    restart: on-failure
+    networks:
+      internal_routes:
+
+  login:
+    container_name: login
+    build: login/
+    restart: on-failure
+    networks:
+      internal_routes:
+        aliases:
+          - login
+
+  rabbitmq_create_user:
+    image: rabbitmq 
+    ports:
+      - "5672:5672"
+    networks:
+      internal_routes:
+        aliases:
+          - rabbitmq
+  
+  create_user:
+    build: create_user/
+    networks:
+      internal_routes:
+        aliases:
+          - create_user
+
+  list_user:
+    container_name: api_luser
+    build: list_user/
+    networks:
+      internal_routes:
+        aliases:
+          - list_user
+
+  data:
+    build: data/
+    depends_on:
+      - "rabbitmq_create_user"
+    restart: on-failure
+    networks:
+      internal_routes:
+
+  mongodb_replicate_set_1:
+    container_name: rs1
+    image: mongo:4.2
+    command: mongod --replSet RS --port 27041 --dbpath /data/db --config /resource/mongod.yml
+    ports:
+      - "27017:27041" 
+    volumes:
+      - ./mongodb/mongod.yml:/resource/mongod.yml
+      - ./mongodb/data/rs1:/data/db
+    networks:
+      internal_routes:
+        aliases:
+          - rs1
+
+  mongodb_replicate_set_2:
+    container_name: rs2
+    image: mongo:4.2
+    command: mongod --replSet RS --port 27042 --dbpath /data/db --config /resource/mongod.yml
+    ports:
+      - "27018:27042" 
+    volumes:
+      - ./mongodb/mongod.yml:/resource/mongod.yml
+      - ./mongodb/data/rs2:/data/db
+    networks:
+      internal_routes:
+        aliases:
+          - rs2
+
+  mongodb_replicate_set_3:
+    container_name: rs3
+    image: mongo:4.2
+    command: mongod --replSet RS --port 27043 --dbpath /data/db --config /resource/mongod.yml
+    ports:
+      - "27019:27043" 
+    volumes:
+      - ./mongodb/mongod.yml:/resource/mongod.yml
+      - ./mongodb/data/rs3:/data/db
+    networks:
+      internal_routes:
+        aliases:
+          - rs3
+  
+  app:
+    container_name: app
+    build: app/
+    restart: on-failure
+    networks:
+      internal_routes:
+        aliases:
+          - app
+
+networks:
+  internal_routes:

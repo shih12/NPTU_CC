@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List</title>
+</head>
+<style>
+  table, th, td {
+    font-size: 20px;
+    border: 1px solid black;
+    padding: 5px;
+    border-collapse:collapse;
+  }
+  </style>
+<body>
+<h1>SHIRT LIST</h1>
+<table border="0">
+  <thead>
+    <tr>
+      <td align="center">URL</td>
+      <td align="center">SIZE</td>
+      <td align="center">REMARK</td>
+    </tr>
+  </thead>
+  {% for user in data %}
+  <tr>
+    <td align="center"><a href="{{ user.url}}">{{ user.url }}</a></td>
+    <td align="center"><a> {{ user.size }} </a> </td>
+    <td align="center"><a> {{ user.remark }} </a></td>
+  </tr>
+  {% endfor %}
+</table>
+
+    
+
+</body>
+</html>
